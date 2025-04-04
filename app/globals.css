@@ -3,6 +3,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+.subHeading{
+  @apply text-2xl  sm:text-4xl font-bold
+}
+
+.subText{
+  @apply text-sm  text-muted-foreground lg:max-w-3xl
+}
+
+@media (min-width: 1536px) {
+  .container{
+    max-width: 1400px;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

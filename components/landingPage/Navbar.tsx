@@ -18,19 +18,19 @@ const NavItems = () => {
   return (
     <>
       <Link
-        href="#features"
+        href="/#features"
         className="text-sm font-medium hover:underline underline-offset-4 block py-2"
       >
         Features
       </Link>
       <Link
-        href="#pricing"
+        href="/#pricing"
         className="text-sm font-medium hover:underline underline-offset-4 block py-2"
       >
         Pricing
       </Link>
       <Link
-        href="#faq"
+        href="/#faqs"
         className="text-sm font-medium hover:underline underline-offset-4 block py-2"
       >
         FAQs
