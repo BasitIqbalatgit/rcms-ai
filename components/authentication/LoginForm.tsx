@@ -14,8 +14,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useId } from "react";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 // Define a type for our animation object
 interface AnimationObject {
@@ -37,11 +41,14 @@ const formSchema = z.object({
 });
 
 export function LoginForm() {
+  const toastId = useId();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [animations, setAnimations] = useState<AnimationObject[]>([]);
   const animationRef = useRef<number | null>(null);
   const isInitialMount = useRef(true);
-  
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -50,9 +57,55 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    toast.loading('Signing in, please wait...', { id: toastId });
+    setLoading(true);
+
+    try {
+      const result = await signIn('credentials', {
+        redirect: false,
+        email: values.email,
+        password: values.password,
+      });
+
+      if (result?.error) {
+        throw new Error(result.error);
+      }
+
+      // If login successful, fetch user data to determine role
+      const response = await fetch('/api/auth/me');
+      const userData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(userData.error || 'Failed to fetch user data');
+      }
+
+      // Redirect based on user role
+      toast.success('Login successful!', { id: toastId });
+
+      // Role-based redirection
+      // Code snippet to replace the role-based redirection in LoginForm.tsx
+      // Role-based redirection
+      switch (userData.role) {
+        case 'admin':
+          router.push('/admin/dashboard');
+          break;
+        case 'operator':
+          router.push('/operator/dashboard');
+          break;
+        case 'saas_provider':
+          router.push('/saas/dashboard');
+          break;
+        default:
+          router.push('/dashboard'); // Default fallback
+      }
+
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to sign in', { id: toastId });
+    } finally {
+      setLoading(false);
+    }
   }
 
   const colors = useMemo(() => [
@@ -102,7 +155,7 @@ export function LoginForm() {
     if (animations.length === 0) return;
 
     const updateAnimations = () => {
-      setAnimations(prevAnimations => 
+      setAnimations(prevAnimations =>
         prevAnimations.map(anim => {
           const newX = anim.x + anim.xVelocity;
           const newY = anim.y + anim.yVelocity;
@@ -146,7 +199,7 @@ export function LoginForm() {
     <div className="relative p-0.5 rounded-lg w-75 md:w-96  md:max-w-md mx-auto">
       {/* Gradient border wrapper */}
       <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500 via-purple-500 to-cyan-500 animate-pulse"></div>
-      
+
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {animations.map((anim, index) => (
           <motion.div
@@ -162,9 +215,9 @@ export function LoginForm() {
           />
         ))}
       </div>
-      
+
       {/* White content area */}
-      <motion.div 
+      <motion.div
         className="relative p-4 sm:p-8 bg-white rounded-lg shadow-xl"
         style={{
           boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
@@ -183,9 +236,9 @@ export function LoginForm() {
                 <FormItem>
                   <FormLabel className="text-gray-700">Email</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder="you@example.com" 
-                      {...field} 
+                    <Input
+                      placeholder="you@example.com"
+                      {...field}
                       className="bg-gray-50 border-gray-200"
                       onFocus={() => setIsFocused(true)}
                       onBlur={() => setIsFocused(false)}
@@ -195,7 +248,7 @@ export function LoginForm() {
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="password"
@@ -203,10 +256,10 @@ export function LoginForm() {
                 <FormItem>
                   <FormLabel className="text-gray-700">Password</FormLabel>
                   <FormControl>
-                    <Input 
+                    <Input
                       type="password"
-                      placeholder="Password" 
-                      {...field} 
+                      placeholder="Password"
+                      {...field}
                       className="bg-gray-50 border-gray-200"
                       onFocus={() => setIsFocused(true)}
                       onBlur={() => setIsFocused(false)}
@@ -216,22 +269,32 @@ export function LoginForm() {
                 </FormItem>
               )}
             />
-            
+
+            <div className="flex justify-end">
+              <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800">
+                Forgot password?
+              </Link>
+            </div>
+
             <motion.div
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-black hover:bg-gray-800 text-white"
+                disabled={loading}
               >
+                {loading &&
+                  <Loader2 className="mr-2 animate-spin" />
+                }
                 Sign In
               </Button>
             </motion.div>
-            
+
             <div className="text-center mt-4">
-              <Link 
-                href="/signup" 
+              <Link
+                href="/signup"
                 className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
               >
                 Don't have an account? <span className="font-medium">Sign Up</span>

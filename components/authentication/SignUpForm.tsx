@@ -14,8 +14,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useId } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { UserRole } from "@/lib/types/UserTypes";
 
 // Define a type for our animation object
 interface AnimationObject {
@@ -60,6 +63,8 @@ const formSchema = z
   });
 
 export function SignUpForm() {
+  const toastId = useId();
+  const [loading, setLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [animations, setAnimations] = useState<AnimationObject[]>([]);
   const animationRef = useRef<number | null>(null);
@@ -75,8 +80,44 @@ export function SignUpForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    toast.loading('Signing Up, Please Wait.', {id: toastId});
+    setLoading(true);
+
+    try {
+      // Map form data to API expected format
+      const userData = {
+        name: values.full_name, // Map full_name to name
+        email: values.email,
+        password: values.password,
+        role: UserRole.ADMIN, // Default role set to ADMIN
+      };
+      
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to sign up');
+      }
+
+      toast.success('Sign up successful! Please check your email for verification.', { id: toastId });
+      
+      // Reset form on success
+      form.reset();
+      
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to sign up', { id: toastId });
+    } finally {
+      setLoading(false);
+    }
   }
 
   const colors = useMemo(() => [
@@ -290,7 +331,11 @@ export function SignUpForm() {
               <Button
                 type="submit"
                 className="w-full bg-black hover:bg-gray-800 text-white"
+                disabled={loading}
               >
+                {loading &&
+                <Loader2 className="mr-2 animate-spin" />
+                }
                 Sign Up
               </Button>
             </motion.div>

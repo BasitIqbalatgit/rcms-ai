@@ -3,7 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-
 .subHeading{
   @apply text-2xl  sm:text-4xl font-bold
 }
@@ -136,9 +135,6 @@
   }
 }
 
-
-
-
 /* Marquee animations */
 @keyframes marquee-vertical {
   from {
@@ -157,7 +153,6 @@
     transform: translateY(0%);
   }
 }
-
 
 @layer utilities {
   /* Marquee animations */
@@ -182,7 +177,7 @@
   .border-border {
     border-color: var(--border);
   }
-  
+
   .outline-ring\/50 {
     outline-color: color-mix(in srgb, var(--ring) 50%);
   }
