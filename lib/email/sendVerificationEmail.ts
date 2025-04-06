@@ -12,8 +12,8 @@ export async function sendVerificationEmail(email: string, token: string, name: 
       port: 587,
       secure: false,
       auth: {
-        user: 'rai.xardar.050@gmail.com',
-        pass: 'iscxqslrvzywcmhp',
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
       },
     });
   
