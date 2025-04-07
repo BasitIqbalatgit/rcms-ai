@@ -271,7 +271,7 @@ export function LoginForm() {
             />
 
             <div className="flex justify-end">
-              <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800">
+              <Link href="/forgot-password" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
                 Forgot password?
               </Link>
             </div>
@@ -292,13 +292,16 @@ export function LoginForm() {
               </Button>
             </motion.div>
 
-            <div className="text-center mt-4">
+            <div className="text-center mt-4 ">
               <Link
                 href="/signup"
                 className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
               >
                 Don't have an account? <span className="font-medium">Sign Up</span>
               </Link>
+
+            
+
             </div>
           </form>
         </Form>
