@@ -54,7 +54,7 @@ const Faqs = () => {
 
 
 
-                <Accordion type="single" collapsible className="w-full max-w-4xl mx-auto mt-16">
+                <Accordion type="single" collapsible className="w-full md:w-4xl max-w-4xl mx-auto mt-16">
                     {
                         faqsList.map((faq) => {
                             return <Question key={faq.question} {...faq} />

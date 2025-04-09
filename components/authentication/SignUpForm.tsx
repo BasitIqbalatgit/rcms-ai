@@ -251,7 +251,7 @@ export function SignUpForm() {
                   <FormLabel className="text-gray-700">Full Name</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="John Doe"
+                      placeholder="Your full name"
                       {...field}
                       className="bg-gray-50 border-gray-200"
                       onFocus={() => setIsFocused(true)}

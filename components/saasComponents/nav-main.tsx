@@ -20,20 +20,10 @@ const items = [
     icon: LayoutDashboard,
   },
   {
-    title: "Manage Operators",
-    url: '/saas/manageOperators', 
+    title: "Manage Admins",
+    url: '/saas/manageAdmins', 
     icon: Users,
-  },
-  {
-    title: "Manage Inventory",
-    url: '/saas/manageInventory',
-    icon: Boxes, 
-  },
-  {
-    title: "Billing",
-    url: '/saas/billing',
-    icon: CreditCard,
-  },
+  },  
   {
     title: "Settings",
     url: '/saas/accountSettings',

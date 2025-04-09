@@ -95,12 +95,7 @@ export function NavUser({
                 Settings
               </DropdownMenuItem>
               </Link>
-              <Link href="/saas/billing" className="w-full cursor-pointer">
-               <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              </Link>
+              
               
               
             </DropdownMenuGroup>
